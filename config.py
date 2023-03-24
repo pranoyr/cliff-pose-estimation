@@ -28,9 +28,9 @@ _C.DATA.TEST_PATH = ""
 # validation data path
 _C.DATA.VAL_PATH = ""
 # img height
-_C.DATA.CROP_IMG_HEIGHT = 256
+_C.DATA.CROP_IMG_HEIGHT = 224
 # img width
-_C.DATA.CROP_IMG_WIDTH = 256
+_C.DATA.CROP_IMG_WIDTH = 224
 # img norm mean
 _C.DATA.IMG_NORM_MEAN = [0.485, 0.456, 0.406]
 # img norm std
@@ -44,10 +44,10 @@ _C.DATA.NUM_WORKERS = 4
 # -----------------------------------------------------------------------------
 _C.MODEL = CN()
 # Model name
-_C.MODEL.NAME = 'HairNet'
+_C.MODEL.NAME = ''
 _C.MODEL.NUM_VERTICES = 100
 # model type
-_C.MODEL.TYPE = 'ResNet'
+_C.MODEL.TYPE = ''
 # Resume model path
 _C.MODEL.RESUME = ""
 # Pretrained model path
@@ -58,6 +58,25 @@ _C.MODEL.KEY_LOSS_WEIGHT = 1.0
 _C.MODEL.BETA_LOSS_WEIGHT = 1.0
 # pose weight
 _C.MODEL.POSE_LOSS_WEIGHT = 1.0
+# Dropout rate
+_C.MODEL.DROP_RATE = 0.0
+# Drop path rate
+_C.MODEL.DROP_PATH_RATE = 0.1
+
+# CrossFormer parameters
+_C.MODEL.CROS = CN()
+_C.MODEL.CROS.PATCH_SIZE = [4, 8, 16, 32]
+_C.MODEL.CROS.MERGE_SIZE = [[2, 4], [2,4], [2, 4]]
+_C.MODEL.CROS.IN_CHANS = 3
+_C.MODEL.CROS.EMBED_DIM = 48
+_C.MODEL.CROS.DEPTHS = [2, 2, 6, 2]
+_C.MODEL.CROS.NUM_HEADS = [3, 6, 12, 24]
+_C.MODEL.CROS.GROUP_SIZE = [7, 7, 7, 7]
+_C.MODEL.CROS.MLP_RATIO = 4.
+_C.MODEL.CROS.QKV_BIAS = True
+_C.MODEL.CROS.QK_SCALE = None
+_C.MODEL.CROS.APE = False
+_C.MODEL.CROS.PATCH_NORM = True
 
 
 # -----------------------------------------------------------------------------

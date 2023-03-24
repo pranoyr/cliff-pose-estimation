@@ -35,6 +35,7 @@ import wandb
 from models.pose_2D import KeypointRCNN
 
 
+
 class Trainer():
     """ Trainer class for training and validation"""
 
@@ -138,7 +139,7 @@ class Trainer():
         img_h, img_w, _ = img_rgb.shape
         focal_length = estimate_focal_length(img_h, img_w)
 
-        norm_img, center, scale, crop_ul, crop_br, _ = process_image(
+        norm_img, center, scale, crop_ul, crop_br, _ = process_image(self.cfg,
             img_rgb, bbox)
 
         center = center.unsqueeze(0).to(self.device)
@@ -155,7 +156,7 @@ class Trainer():
         bbox_info[:, 2] = (bbox_info[:, 2] - 0.24 *
                            focal_length) / (0.06 * focal_length)  # [-1, 1]
 
-        norm_img = torch.from_numpy(norm_img).unsqueeze(0)
+        norm_img = norm_img.unsqueeze(0)
         norm_img = norm_img.to(self.device)
 
         with torch.no_grad():
@@ -189,7 +190,6 @@ class Trainer():
         front_view = cv2.resize(front_view, (480, 640))
         output_file_path = self.cfg.OUTPUT_DIR + \
             f"/result_{self.cfg.EXP_NAME}.jpg"
-        print(output_file_path)
         cv2.imwrite(output_file_path, front_view)
         del renderer
 

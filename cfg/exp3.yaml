@@ -1,7 +1,7 @@
 MODEL : 
       NAME : CLIFF
-      TYPE : Resnet50
-      RESUME : checkpoints/best_weights_exp3.pth
+      TYPE : resnet
+      # RESUME : checkpoints/best_weights_exp3.pth
      # PRETRAINED : data/ckpt/res50-PA45.7_MJE72.0_MVE85.3_3dpw.pt
       KEY_LOSS_WEIGHT : 5.0
       BETA_LOSS_WEIGHT : 0.001
@@ -19,6 +19,8 @@ DATA :
       # TEST_PATH : test_images
       BATCH_SIZE : 32
       NUM_WORKERS : 0
+      CROP_IMG_HEIGHT : 256
+      CROP_IMG_WIDTH : 192
 
 TRAIN :
       EPOCHS : 500

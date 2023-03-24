@@ -1,6 +1,6 @@
 MODEL : 
       NAME : CLIFF
-      TYPE : Resnet50
+      TYPE : resnet
       # RESUME : 
       PRETRAINED : data/ckpt/res50-PA45.7_MJE72.0_MVE85.3_3dpw.pt
       KEY_LOSS_WEIGHT : 5.0

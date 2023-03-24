@@ -17,8 +17,10 @@ import torch.nn as nn
 import numpy as np
 import math
 
+
 from common.imutils import rot6d_to_rotmat
 from .backbones.resnet import ResNet
+from .backbones.crossformer import CrossFormer
 
 
 class CLIFF(nn.Module):
@@ -26,7 +28,25 @@ class CLIFF(nn.Module):
 
     def __init__(self, cfg, img_feat_num=2048):
         super(CLIFF, self).__init__()
-        self.encoder = ResNet(layers=[2, 2, 2, 2])
+        if cfg.MODEL.TYPE == 'resnet':
+            self.encoder = ResNet(layers=[2, 2, 2, 2])
+        elif cfg.MODEL.TYPE == 'cross-scale':
+            self.encoder = CrossFormer(img_size=cfg.DATA.CROP_IMG_HEIGHT,
+                                       patch_size=cfg.MODEL.CROS.PATCH_SIZE,
+                                       in_chans=cfg.MODEL.CROS.IN_CHANS,
+                                       embed_dim=cfg.MODEL.CROS.EMBED_DIM,
+                                       depths=cfg.MODEL.CROS.DEPTHS,
+                                       num_heads=cfg.MODEL.CROS.NUM_HEADS,
+                                       group_size=cfg.MODEL.CROS.GROUP_SIZE,
+                                       mlp_ratio=cfg.MODEL.CROS.MLP_RATIO,
+                                       qkv_bias=cfg.MODEL.CROS.QKV_BIAS,
+                                       qk_scale=cfg.MODEL.CROS.QK_SCALE,
+                                       drop_rate=cfg.MODEL.DROP_RATE,
+                                       drop_path_rate=cfg.MODEL.DROP_PATH_RATE,
+                                       ape=cfg.MODEL.CROS.APE,
+                                       patch_norm=cfg.MODEL.CROS.PATCH_NORM,
+                                       use_checkpoint=cfg.TRAIN.USE_CHECKPOINT,
+                                       merge_size=cfg.MODEL.CROS.MERGE_SIZE,)
 
         npose = 24 * 6
         nshape = 10
@@ -61,7 +81,8 @@ class CLIFF(nn.Module):
 
         mean_params = np.load(smpl_mean_params)
         init_pose = torch.from_numpy(mean_params['pose'][:]).unsqueeze(0)
-        init_shape = torch.from_numpy(mean_params['shape'][:].astype('float32')).unsqueeze(0)
+        init_shape = torch.from_numpy(
+            mean_params['shape'][:].astype('float32')).unsqueeze(0)
         init_cam = torch.from_numpy(mean_params['cam']).unsqueeze(0)
         self.register_buffer('init_pose', init_pose)
         self.register_buffer('init_shape', init_shape)

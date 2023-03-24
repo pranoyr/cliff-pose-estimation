@@ -1,4 +1,3 @@
-from gzip import READ
 import numpy as np
 import os, glob, cv2, sys
 from torch.utils.data import Dataset
@@ -94,6 +93,7 @@ class CustomDataset(Dataset):
 		self.aug = True
 		self.img_format = img_format
 		self.image_list = self.get_data(self.root_dir)
+		# self.image_list = self.image_list[:100]
 		self.keypoint_detector = KeypointRCNN()
 		self.setting_cache()
 	
@@ -156,7 +156,7 @@ class CustomDataset(Dataset):
 				is_params = 1
 		else:
 			pose_params = torch.zeros((23, 3, 3))
-			beta_params = torch.zeros((10))
+			beta_params = torch.zeros((10,))
 			is_params = 0
 		
 
@@ -166,16 +166,11 @@ class CustomDataset(Dataset):
 			keypoint_results = self.keypoint_detector.detect_pose(img_rgb)
 			self.save_to_cache(img_path, keypoint_results)
 
-		# try:
-		# 	keypoint_results = self.keypoint_detector.detect_pose(img_rgb) # shape (18, 2)
-		# except:
-		# 	print("Keypoint detection failed")
-		# 	return self.__getitem__(index + 1)
-	
+		
 		target_landmarks = keypoint_results["normalised_keypoints"]
 		focal_length = estimate_focal_length(img_h, img_w)
 		bbox = keypoint_results["bbox"]
-		norm_img, center, scale, _, _, _ = process_image(img_rgb, bbox)
+		norm_img, center, scale, _, _, _ = process_image(self.cfg, img_rgb, bbox)
 
 
 		if self.image_set == 'train' and is_params == 1:
@@ -187,12 +182,13 @@ class CustomDataset(Dataset):
 			target_landmarks[:,0] = keypoints[:,0] / img_w
 			target_landmarks[:,1] = keypoints[:,1] / img_h
 
-			norm_img, center, scale, _, _, crop_img = process_image(img_rgb, bbox, pn=pn, rot=rot, flip=flip, train=True)
+			norm_img, center, scale, _, _, crop_img = process_image(self.cfg, img_rgb, bbox, pn=pn, rot=rot, flip=flip, train=True)
 
 
 			pose_params = convert_to_angle_axis(torch.from_numpy(pose_params).unsqueeze(0), 23)
 			pose_params = torch.from_numpy(pose_processing(pose_params.numpy(), rot, flip)).float()
 			pose_params = convert_to_rotmat(pose_params, 23)
+			beta_params = torch.from_numpy(beta_params)
 
 
 

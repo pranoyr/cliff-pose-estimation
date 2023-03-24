@@ -15,7 +15,7 @@ SMPL_MEAN_PARAMS = join(curr_dir, '../data/smpl_mean_params.npz')
 SMPL_MODEL_DIR = join(curr_dir, '../data')
 
 CROP_IMG_HEIGHT = 256
-CROP_IMG_WIDTH = 192
+CROP_IMG_WIDTH = 256
 CROP_ASPECT_RATIO = CROP_IMG_HEIGHT / float(CROP_IMG_WIDTH)
 
 # Mean and standard deviation for normalizing input image

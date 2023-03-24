@@ -114,14 +114,14 @@ def bbox_from_detector(bbox, rescale=1.1):
     return center, scale
 
 
-def process_image(orig_img_rgb, bbox,
-                  crop_height=constants.CROP_IMG_HEIGHT,
-                  crop_width=constants.CROP_IMG_WIDTH, rot=0, flip=0, train=False, pn=[]):
+def process_image(cfg, orig_img_rgb, bbox, rot=0, flip=0, train=False, pn=[]):
     """
     Read image, do preprocessing and possibly crop it according to the bounding box.
     If there are bounding box annotations, use them to crop the image.
     If no bounding box is specified but openpose detections are available, use them to get the bounding box.
     """
+    crop_height = cfg.DATA.CROP_IMG_HEIGHT
+    crop_width = cfg.DATA.CROP_IMG_WIDTH
     try:
         center, scale = bbox_from_detector(bbox)
     except Exception as e:
@@ -145,13 +145,14 @@ def process_image(orig_img_rgb, bbox,
         img[:,:,2] = np.minimum(255.0, np.maximum(0.0, img[:,:,2]*pn[2]))
 
     img = img / 255.
-    mean = np.array(constants.IMG_NORM_MEAN, dtype=np.float32)
-    std = np.array(constants.IMG_NORM_STD, dtype=np.float32)
+    mean = np.array(cfg.DATA.IMG_NORM_MEAN, dtype=np.float32)
+    std = np.array(cfg.DATA.IMG_NORM_STD, dtype=np.float32)
     norm_img = (img - mean) / std
     norm_img = np.transpose(norm_img, (2, 0, 1))
 
     
-
+    # convert to torch tensor
+    norm_img = torch.from_numpy(norm_img).float()
     return norm_img, center, scale, ul, br, crop_img
 
 
