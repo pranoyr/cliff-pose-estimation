@@ -28,7 +28,7 @@ TRAIN :
                   NAME : multistep
                   GAMMA : 0.1
                   #MULTISTEPS : [2500]
-                  MULTISTEPS : [20000, 40000]
+                  MULTISTEPS : [68950000]
       OPTIMIZER :
                   NAME : adam
           
@@ -39,7 +39,7 @@ CKPT_DIR :  checkpoints
 
 
 PRINT_FREQ : 2
-SAVE_FREQ : 6895000
+SAVE_FREQ : 68950000
 TRAIN_FREQ : 100
 VALID_FREQ  : 1000
 

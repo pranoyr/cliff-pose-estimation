@@ -94,7 +94,7 @@ def crop(img, center, scale, res, rot=0):
     return new_img, ul, br
 
 
-def bbox_from_detector(bbox, rescale=1.1):
+def bbox_from_detector(cfg, bbox, rescale=1.1):
     """
     Get center and scale of bounding box from bounding box.
     The expected format is [min_x, min_y, max_x, max_y].
@@ -107,7 +107,8 @@ def bbox_from_detector(bbox, rescale=1.1):
     # scale
     bbox_w = bbox[2] - bbox[0]
     bbox_h = bbox[3] - bbox[1]
-    bbox_size = max(bbox_w * constants.CROP_ASPECT_RATIO, bbox_h)
+    aspect_ratio = cfg.DATA.CROP_IMG_HEIGHT / cfg.DATA.CROP_IMG_WIDTH
+    bbox_size = max(bbox_w * aspect_ratio, bbox_h)
     scale = bbox_size / 200.0
     # adjust bounding box tightness
     scale *= rescale
@@ -123,7 +124,7 @@ def process_image(cfg, orig_img_rgb, bbox, rot=0, flip=0, train=False, pn=[]):
     crop_height = cfg.DATA.CROP_IMG_HEIGHT
     crop_width = cfg.DATA.CROP_IMG_WIDTH
     try:
-        center, scale = bbox_from_detector(bbox)
+        center, scale = bbox_from_detector(cfg, bbox)
     except Exception as e:
         print("Error occurs in person detection", e)
         # Assume that the person is centered in the image

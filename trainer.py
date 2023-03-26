@@ -1,30 +1,15 @@
 import torch
-import numpy as np
 import wandb
-import os
-import os
-import sys
-import torch
 from utils.cliff_utils import *
 import cv2
-import torch.nn as nn
 from torch.nn import functional as F
 from common.imutils import process_image
 from common.utils import estimate_focal_length
 from common.renderer_pyrd import Renderer
 from losses import *
-
 import random
-
 from utils.meter import *
 
-import albumentations as A
-
-import os
-import torch
-
-# add path for demo utils functions
-import sys
 import os
 import numpy as np
 import smplx
@@ -45,7 +30,7 @@ class Trainer():
         self.device = device
         self.model = model
 
-        self.start_epoch = 0
+        self.global_step = 0
 
         self.prepare_data()
         self.get_training_config()
@@ -114,9 +99,9 @@ class Trainer():
             self.model.load_state_dict(checkpoint['state_dict'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
             self.scheduler.load_state_dict(checkpoint['scheduler'])
-            self.start_epoch = checkpoint['epoch'] + 1
+            self.global_step = checkpoint['step'] 
             print(
-                f"==> Loaded checkpoint '{self.cfg.MODEL.RESUME}' (epoch {self.start_epoch})")
+                f"==> Loaded checkpoint '{self.cfg.MODEL.RESUME}' (iteration {self.global_step})")
         elif self.cfg.MODEL.PRETRAINED:
             state_dict = torch.load(self.cfg.MODEL.PRETRAINED)['model']
             self.model.load_state_dict(state_dict, strict=False)
@@ -283,12 +268,12 @@ class Trainer():
 
         return losses / len(self.val_loader)
 
-    def save_checkpoint(self, epoch, filename, is_best=False):
+    def save_checkpoint(self, step, filename, is_best=False):
         """Save checkpoint"""
 
         if is_best:
             checkpoint = {
-                'epoch': epoch,
+                'step': step,
                 'state_dict': self.model.state_dict(),
                 'optimizer': self.optimizer.state_dict(),
                 'scheduler': self.scheduler.state_dict()
@@ -299,9 +284,9 @@ class Trainer():
         """Train the model"""
 
         self.model.train()
-        for epoch in range(self.start_epoch, self.cfg.TRAIN.EPOCHS):
+        start_epoch = self.global_step//len(self.train_loader)
+        for epoch in range(start_epoch, self.cfg.TRAIN.EPOCHS):
             for idx, batch in enumerate(self.train_loader):
-                step = epoch * len(self.train_loader) + idx
                 norm_img = batch["norm_img"].to(self.device).float()
                 center = batch["center"].to(self.device).float()
                 scale = batch["scale"].to(self.device).float()
@@ -391,40 +376,42 @@ class Trainer():
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
+                self.scheduler.step()
 
                 # LOGGING
-                if step % self.cfg.PRINT_FREQ == 0:
-                    self.progress.display(step)
+                if self.global_step % self.cfg.PRINT_FREQ == 0:
+                    self.progress.display(self.global_step)
 
-                if step % self.cfg.TRAIN_FREQ == 0:
-                    wandb.log({'train_loss': self.losses.avg}, step=step)
+                if self.global_step % self.cfg.TRAIN_FREQ == 0:
+                    wandb.log({'train_loss': self.losses.avg}, step=self.global_step)
 
-                if step % self.cfg.VALID_FREQ == 0:
+                if self.global_step % self.cfg.VALID_FREQ == 0:
                     self.model.eval()
                     val_loss = self.validate()
                     self.visualise()
                     self.model.train()
 
                     lr = self.optimizer.param_groups[0]['lr']
-                    wandb.log({'train_loss': self.losses.avg}, step=step)
-                    wandb.log({'val_loss': val_loss}, step=step)
-                    wandb.log({'lr': lr}, step=step)
+                    wandb.log({'train_loss': self.losses.avg}, step=self.global_step)
+                    wandb.log({'val_loss': val_loss}, step=self.global_step)
+                    wandb.log({'lr': lr}, step=self.global_step)
 
                     is_best = val_loss < self.th
                     self.th = min(val_loss, self.th)
                     checkpoint_path = self.cfg.CKPT_DIR + \
                         f"/best_weights_{self.cfg.EXP_NAME}.pth"
                     self.save_checkpoint(
-                        epoch,  checkpoint_path, is_best=is_best)
+                        self.global_step,  checkpoint_path, is_best=is_best)
 
-                if step % self.cfg.SAVE_FREQ == 0:
+                if self.global_step % self.cfg.SAVE_FREQ == 0:
                     # save model
                     # checkpoint_iter10_trial1.pth
                     checkpoint_name = self.cfg.CKPT_DIR + \
-                        f"/checkpoint_iter{step}_{self.cfg.EXP_NAME}.pth"
-                    self.save_checkpoint(epoch, checkpoint_name,  is_best=True)
+                        f"/checkpoint_iter{self.global_step}_{self.cfg.EXP_NAME}.pth"
+                    self.save_checkpoint(self.global_step, checkpoint_name,  is_best=True)
                     print("model saved to {}".format(checkpoint_name))
                     print()
+                self.global_step += 1
 
             print("Epoch " + str(epoch) + " completed")
             print()
@@ -433,4 +420,4 @@ class Trainer():
         # final_weights_trial1.pth
         checkpoint_name = self.cfg.CKPT_DIR + \
             f"/final_weights_{self.cfg.EXP_NAME}.pth"
-        self.save_checkpoint(epoch, checkpoint_name, is_best=True)
+        self.save_checkpoint(self.global_step, checkpoint_name, is_best=True)

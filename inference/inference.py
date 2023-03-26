@@ -30,7 +30,7 @@ import torch
 from models.cliff import CLIFF
 
 
-from  models.yolov5 import YOLO
+from  models.pose_2D import KeypointRCNN
 
 import argparse
 from utils import *
@@ -81,12 +81,12 @@ opt = parser.parse_args()
 cfg = get_config(opt.cfg)
 
 
-yolo = YOLO()
+kopt_cnn = KeypointRCNN()
 model = CLIFF(cfg).to(device)
-model = torch.compile(model)
+# model = torch.compile(model)
 
 
-checkpoint = torch.load(cfg.CKPT_DIR + f"/best_weights_{cfg.EXP_NAME}.pth", map_location="cuda:0")
+checkpoint = torch.load(cfg.CKPT_DIR + f"/checkpoint_iter569250_{cfg.EXP_NAME}.pth", map_location="cuda:0")
 model.load_state_dict(checkpoint['state_dict'])
 
 
@@ -163,7 +163,8 @@ while True:
 	# scaled_keypoints = kpt_results["scaled_keypoints"]
 
 	yolov5_time_start = time.time()
-	bbox = yolo.detect_person(img_bgr)
+	img_rgb = img_bgr[:, :, ::-1]
+	bbox = kopt_cnn.detect_pose(img_rgb.copy())["bbox"]
 	bbox = bbox.to(device)
 
 	print("YOLOV5 PIPE FPS: ", 1/(time.time() - yolov5_time_start))
@@ -193,7 +194,7 @@ while True:
 
 
 
-	norm_img, center, scale, crop_ul, crop_br, _ = process_image(img_rgb, bbox)
+	norm_img, center, scale, crop_ul, crop_br, _ = process_image(cfg, img_rgb, bbox)
 
 
 	
@@ -220,7 +221,7 @@ while True:
 	bbox_info[:, 2] = (bbox_info[:, 2] - 0.24 * focal_length) / (0.06 * focal_length)  # [-1, 1]
 
 
-	norm_img = torch.from_numpy(norm_img).unsqueeze(0)
+	norm_img = norm_img.unsqueeze(0)
 	norm_img = norm_img.to(device)
 
 

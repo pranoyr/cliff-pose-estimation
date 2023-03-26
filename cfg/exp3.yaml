@@ -1,8 +1,8 @@
 MODEL : 
       NAME : CLIFF
       TYPE : resnet
-      # RESUME : checkpoints/best_weights_exp3.pth
-     # PRETRAINED : data/ckpt/res50-PA45.7_MJE72.0_MVE85.3_3dpw.pt
+      RESUME : checkpoints/checkpoint_iter86250_exp3.pth
+      # PRETRAINED : data/ckpt/res50-PA45.7_MJE72.0_MVE85.3_3dpw.pt
       KEY_LOSS_WEIGHT : 5.0
       BETA_LOSS_WEIGHT : 0.001
       POSE_LOSS_WEIGHT : 1.0
@@ -17,7 +17,7 @@ DATA :
       TRAIN_PATH  : /home/pranoy/datasets/CLIFF_DATA/Train
       VAL_PATH : /home/pranoy/datasets/CLIFF_DATA/Val
       # TEST_PATH : test_images
-      BATCH_SIZE : 32
+      BATCH_SIZE : 8
       NUM_WORKERS : 0
       CROP_IMG_HEIGHT : 256
       CROP_IMG_WIDTH : 192
@@ -30,7 +30,7 @@ TRAIN :
                   NAME : multistep
                   GAMMA : 0.1
                   #MULTISTEPS : [2500]
-                  MULTISTEPS : [20000, 40000]
+                  MULTISTEPS : [172500000]
       OPTIMIZER :
                   NAME : adam
           
@@ -40,7 +40,7 @@ OUTPUT_DIR : outputs
 CKPT_DIR :  checkpoints
 
 PRINT_FREQ : 2
-SAVE_FREQ : 6895000
+SAVE_FREQ : 17250
 TRAIN_FREQ : 100
 VALID_FREQ  : 1000
 
