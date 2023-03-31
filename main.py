@@ -37,7 +37,7 @@ def main():
 
 	# load model
 	model = CLIFF(cfg).to(device)
-	#model = torch.compile(model)
+	model = torch.compile(model)
 	
 	trainer = Trainer(cfg, model, device)
 	trainer.fit()
