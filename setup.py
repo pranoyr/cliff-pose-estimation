@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-  name = 'cliff_pose',
+  name = 'cliff',
   packages = find_packages(exclude=[]),
   include_package_data = True,
   version = '0.0.1',
