@@ -6,7 +6,7 @@ import numpy as np
 import scipy.misc
 import cv2
 
-from common import constants
+from ..common import constants
 
 def get_transform(center, scale, res, rot=0):
     """Generate transformation matrix."""
@@ -139,15 +139,7 @@ def flip_pose(pose):
     """Flip pose.
     The flipping is based on SMPL parameters.
     """
-
-    SMPL_JOINTS_FLIP_PERM = [0, 2, 1, 3, 5, 4, 6, 8, 7, 9, 11, 10, 12, 14, 13, 15, 17, 16, 19, 18, 21, 20, 23, 22]
-
-    SMPL_POSE_FLIP_PERM = []
-    for i in SMPL_JOINTS_FLIP_PERM:
-        SMPL_POSE_FLIP_PERM.append(3*i)
-        SMPL_POSE_FLIP_PERM.append(3*i+1)
-        SMPL_POSE_FLIP_PERM.append(3*i+2)
-    flipped_parts = SMPL_JOINTS_FLIP_PERM
+    flipped_parts = constants.SMPL_POSE_FLIP_PERM
     pose = pose[flipped_parts]
     # we also negate the second and the third dimension of the axis-angle
     pose[1::3] = -pose[1::3]

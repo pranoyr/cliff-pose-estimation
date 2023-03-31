@@ -1,28 +1,15 @@
 import os
-import sys
 import torch
-
-import cv2
-import torch.nn as nn
-from torch.nn import functional as F
-import torchvision.transforms as transforms
-
-
-
 import random
 import os
 import torch
 import matplotlib.pyplot as plt
-from config import get_config
-from models.cliff import CLIFF
+from cliff import CLIFF, get_config, Trainer
 
 # add path for demo utils functions 
-import sys
-import os
 import numpy as np
 import wandb
 import argparse
-from trainer import Trainer
 
 
 def set_seed(seed):

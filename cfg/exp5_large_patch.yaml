@@ -1,8 +1,8 @@
 MODEL:
       NAME: CLIFF
       TYPE: cross-scale
-      # RESUME: checkpoints/best_weights_exp4.pth
-      PRETRAINED : data/ckpt/res50-PA45.7_MJE72.0_MVE85.3_3dpw.pt
+      RESUME: checkpoints/best_weights_exp5.pth
+      # PRETRAINED : data/ckpt/res50-PA45.7_MJE72.0_MVE85.3_3dpw.pt
       DROP_PATH_RATE: 0.3
       CROS:
             EMBED_DIM: 96

@@ -9,8 +9,8 @@
 
 from torch.utils.data import Dataset
 
-from common.imutils import process_image
-from common.utils import estimate_focal_length
+from .imutils import process_image
+from .utils import estimate_focal_length
 
 
 class MocapDataset(Dataset):

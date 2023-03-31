@@ -86,7 +86,7 @@ model = CLIFF(cfg).to(device)
 # model = torch.compile(model)
 
 
-checkpoint = torch.load(cfg.CKPT_DIR + f"/checkpoint_iter569250_{cfg.EXP_NAME}.pth", map_location="cuda:0")
+checkpoint = torch.load(cfg.CKPT_DIR + f"/final_weights_{cfg.EXP_NAME}.pth", map_location="cuda:0")
 model.load_state_dict(checkpoint['state_dict'])
 
 

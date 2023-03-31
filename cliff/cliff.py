@@ -14,13 +14,15 @@
 # This script is borrowed and extended from SPIN
 import torch
 import torch.nn as nn
+
+from pathlib import Path
 import numpy as np
 import math
 
+from .models.backbones.resnet import ResNet
+from .models.backbones.crossformer import CrossFormer
+from .common.imutils import rot6d_to_rotmat
 
-from common.imutils import rot6d_to_rotmat
-from .backbones.resnet import ResNet
-from .backbones.crossformer import CrossFormer
 
 
 class CLIFF(nn.Module):

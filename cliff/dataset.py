@@ -2,16 +2,15 @@ import numpy as np
 import os, glob, cv2, sys
 from torch.utils.data import Dataset
 from torchgeometry import angle_axis_to_rotation_matrix, rotation_matrix_to_angle_axis
-from augmentation.geometry import batch_rodrigues, perspective_projection, estimate_translation
+from .augmentation.geometry import batch_rodrigues
 
 import torch
-from models.pose_2D import KeypointRCNN
-from common.renderer_pyrd import Renderer
-from common.imutils import process_image
-from common.utils import estimate_focal_length
+from .models.pose_2D import KeypointRCNN
+from .common.renderer_pyrd import Renderer
+from .common.imutils import process_image
+from .common.utils import estimate_focal_length
 from torchvision.transforms import Normalize
-from utils.imutils import crop, flip_img, flip_pose, flip_kp, transform, rot_aa
-from common import constants
+from .utils.imutils import crop, flip_img, flip_pose, flip_kp, transform, rot_aa
 
 import pickle as pk
 from PIL import Image

@@ -1,23 +1,22 @@
 import torch
 import wandb
-from utils.cliff_utils import *
+from .utils.cliff_utils import *
 import cv2
 from torch.nn import functional as F
-from common.imutils import process_image
-from common.utils import estimate_focal_length
-from common.renderer_pyrd import Renderer
-from losses import *
+from .common.imutils import process_image
+from .common.utils import estimate_focal_length
+from .common.renderer_pyrd import Renderer
+from .losses import *
 import random
-from utils.meter import *
+from .utils.meter import *
 
 import os
-import numpy as np
 import smplx
 import math
 
-from dataset import CustomDataset
+from .dataset import CustomDataset
 import wandb
-from models.pose_2D import KeypointRCNN
+from .models.pose_2D import KeypointRCNN
 
 
 

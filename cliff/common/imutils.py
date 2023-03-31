@@ -9,7 +9,6 @@ from scipy.ndimage.interpolation import rotate
 import scipy
 import numpy as np
 
-from common import constants
 
 
 def get_transform(center, scale, res, rot=0):
