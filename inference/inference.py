@@ -24,16 +24,16 @@ sys.path.append(str(Path(__file__).parent.parent))
 import pickle
 import os.path as osp
 import cv2
-import glob
 import torch
 
-from models.cliff import CLIFF
+from lib import CLIFF
+from lib.models.pose_2D import KeypointRCNN
 
 
-from  models.pose_2D import KeypointRCNN
+
 
 import argparse
-from utils import *
+from lib.utils import *
 import numpy as np
 from tqdm import tqdm
 import smplx
@@ -41,16 +41,16 @@ import smplx
 import torchgeometry as tgm
 
 
-from common.renderer_pyrd import Renderer
-from common import constants
-from common.utils import strip_prefix_if_present, cam_crop2full, video_to_images
-from common.utils import estimate_focal_length
-from common.renderer_pyrd import Renderer
+from lib.common.renderer_pyrd import Renderer
+from lib.common import constants
+from lib.common.utils import strip_prefix_if_present, cam_crop2full, video_to_images
+from lib.common.utils import estimate_focal_length
+from lib.common.renderer_pyrd import Renderer
 # from lib.yolov3_detector import HumanDetector
-from common.mocap_dataset import MocapDataset
+from lib.common.mocap_dataset import MocapDataset
 # from lib.yolov3_dataset import DetectionDataset
-from common.imutils import process_image
-from common.utils import estimate_focal_length
+from lib.common.imutils import process_image
+from lib.common.utils import estimate_focal_length
 
 
 
@@ -60,7 +60,7 @@ import cv2
 
 import numpy as np
 import torch
-from config import get_config
+from lib.config import get_config
 
 
 # from pose_2D import detect_pose
@@ -83,7 +83,7 @@ cfg = get_config(opt.cfg)
 
 kopt_cnn = KeypointRCNN()
 model = CLIFF(cfg).to(device)
-# model = torch.compile(model)
+model = torch.compile(model)
 
 
 checkpoint = torch.load(cfg.CKPT_DIR + f"/final_weights_{cfg.EXP_NAME}.pth", map_location="cuda:0")
@@ -105,7 +105,7 @@ def extract_bounding_box(points):
 vid = cv2.VideoCapture(0)
 
 # Setup the SMPL model
-smpl_model = smplx.create(constants.SMPL_MODEL_DIR, "smpl").to(device)
+smpl_model = smplx.create(cfg.SMPL.SMPL_MODEL_DIR, "smpl").to(device)
 
 
 focal_length = 800

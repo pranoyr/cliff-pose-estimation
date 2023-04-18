@@ -4,7 +4,7 @@ import random
 import os
 import torch
 import matplotlib.pyplot as plt
-from cliff import CLIFF, get_config, Trainer
+from lib import CLIFF, get_config, Trainer
 
 # add path for demo utils functions 
 import numpy as np

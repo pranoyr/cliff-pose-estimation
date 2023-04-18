@@ -1,6 +1,19 @@
 import torch
 import numpy as np
+from torchgeometry import angle_axis_to_rotation_matrix, rotation_matrix_to_angle_axis
+from lib.augmentation.geometry import batch_rodrigues
 
+
+def convert_to_angle_axis(pred_pose, i):
+	pred_rotmat_hom = torch.cat([pred_pose.detach().view(-1, 3, 3).detach(), torch.tensor([0,0,1], dtype=torch.float32,
+				device="cpu").view(1, 3, 1).expand(1 * i, -1, -1)], dim=-1)
+	pred_pose = rotation_matrix_to_angle_axis(pred_rotmat_hom).contiguous().view(1, -1)[0]
+	# pred_pose = pred_pose.view(-1, 3)
+	return pred_pose
+
+def convert_to_rotmat(pred_pose, i):
+	pred_pose = batch_rodrigues(pred_pose.view(-1,3)).view(-1, i, 3, 3)
+	return pred_pose[0]
 
 
 
